@@ -4,7 +4,7 @@ import * as Minio from 'minio';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 
-interface MinioFileInfo {
+export interface MinioFileInfo {
   name: string;
   lastModified: Date;
   etag: string;

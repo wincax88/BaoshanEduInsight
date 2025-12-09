@@ -29,7 +29,7 @@ export class AuthController {
   @Get('profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: '获取当前用户信息' })
-  async getProfile(@Request() req) {
+  async getProfile(@Request() req: { user: { sub: string } }) {
     return this.authService.getProfile(req.user.sub);
   }
 }

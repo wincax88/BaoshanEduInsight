@@ -15,5 +15,9 @@ export declare class AuthController {
             school: any;
         };
     }>;
-    getProfile(req: any): Promise<import("../users/entities/user.entity").User>;
+    getProfile(req: {
+        user: {
+            sub: string;
+        };
+    }): Promise<import("../users/entities/user.entity").User>;
 }

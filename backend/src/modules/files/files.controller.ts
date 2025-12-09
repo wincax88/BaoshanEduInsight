@@ -17,8 +17,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { Response } from 'express';
-import { FilesService } from './files.service';
+import type { Response } from 'express';
+import { FilesService, MinioFileInfo } from './files.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 // 允许的文件扩展名和 MIME 类型
@@ -204,7 +204,7 @@ export class FilesController {
 
   @Get('list')
   @ApiOperation({ summary: '列出文件' })
-  async listFiles(@Query('prefix') prefix?: string) {
+  async listFiles(@Query('prefix') prefix?: string): Promise<MinioFileInfo[]> {
     return this.filesService.listFiles(prefix || '');
   }
 }

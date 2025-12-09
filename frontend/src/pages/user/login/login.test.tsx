@@ -71,7 +71,7 @@ describe('Login Page', () => {
     await rootContainer.findAllByText('宝山区小学成熟度测评');
 
     const userNameInput = await rootContainer.findByPlaceholderText(
-      'Username: admin or user',
+      '用户名: admin or user',
     );
 
     act(() => {
@@ -79,11 +79,11 @@ describe('Login Page', () => {
     });
 
     const passwordInput = await rootContainer.findByPlaceholderText(
-      'Password: ant.design',
+      '密码: admin123',
     );
 
     act(() => {
-      fireEvent.change(passwordInput, { target: { value: 'ant.design' } });
+      fireEvent.change(passwordInput, { target: { value: 'admin123' } });
     });
 
     await (await rootContainer.findByText('Login')).click();

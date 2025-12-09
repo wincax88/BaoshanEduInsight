@@ -6,7 +6,11 @@ import { AssessmentStatus } from './entities/assessment-task.entity';
 export declare class AssessmentsController {
     private readonly assessmentsService;
     constructor(assessmentsService: AssessmentsService);
-    create(dto: CreateAssessmentDto, req: any): Promise<import("./entities/assessment-task.entity").AssessmentTask>;
+    create(dto: CreateAssessmentDto, req: {
+        user: {
+            sub: string;
+        };
+    }): Promise<import("./entities/assessment-task.entity").AssessmentTask>;
     findAll(query: QueryAssessmentDto): Promise<{
         data: import("./entities/assessment-task.entity").AssessmentTask[];
         total: number;

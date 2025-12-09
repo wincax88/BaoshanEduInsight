@@ -29,7 +29,7 @@ export class AuthService {
     const payload = {
       sub: user.id,
       username: user.username,
-      roles: user.roles?.map((r) => r.code) || [],
+      roles: user.roles?.map((r: { code: string }) => r.code) || [],
     };
 
     await this.usersService.updateLastLogin(user.id);

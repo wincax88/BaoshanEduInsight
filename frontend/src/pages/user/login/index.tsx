@@ -106,7 +106,9 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
+      const response = await login({ ...values, type });
+      // 后端返回格式: { code, message, data: { access_token, user } }
+      const msg = (response as any).data || response;
       if (msg.access_token) {
         // 使用 tokenService 保存 JWT token
         tokenService.set(msg.access_token);
@@ -168,7 +170,7 @@ const Login: React.FC = () => {
           />
 
           {status === 'error' && loginType === 'account' && (
-            <LoginMessage content="账户或密码错误(admin/ant.design)" />
+            <LoginMessage content="账户或密码错误(admin/admin123)" />
           )}
           {type === 'account' && (
             <>
@@ -192,7 +194,7 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
-                placeholder="密码: ant.design"
+                placeholder="密码: admin123"
                 rules={[
                   {
                     required: true,

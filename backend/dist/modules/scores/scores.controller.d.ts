@@ -6,8 +6,16 @@ import { ScoreType } from './entities/assessment-score.entity';
 export declare class ScoresController {
     private readonly scoresService;
     constructor(scoresService: ScoresService);
-    create(dto: CreateScoreDto, req: any): Promise<import("./entities/assessment-score.entity").AssessmentScore>;
-    batchCreate(dto: BatchCreateScoreDto, req: any): Promise<import("./entities/assessment-score.entity").AssessmentScore[]>;
+    create(dto: CreateScoreDto, req: {
+        user: {
+            sub: string;
+        };
+    }): Promise<import("./entities/assessment-score.entity").AssessmentScore>;
+    batchCreate(dto: BatchCreateScoreDto, req: {
+        user: {
+            sub: string;
+        };
+    }): Promise<import("./entities/assessment-score.entity").AssessmentScore[]>;
     findByTask(taskId: string, scoreType?: ScoreType): Promise<import("./entities/assessment-score.entity").AssessmentScore[]>;
     getStatistics(taskId: string): Promise<{
         selfScoreCount: number;
@@ -17,6 +25,10 @@ export declare class ScoresController {
         scores: import("./entities/assessment-score.entity").AssessmentScore[];
     }>;
     findOne(id: string): Promise<import("./entities/assessment-score.entity").AssessmentScore>;
-    update(id: string, dto: UpdateScoreDto, req: any): Promise<import("./entities/assessment-score.entity").AssessmentScore>;
+    update(id: string, dto: UpdateScoreDto, req: {
+        user: {
+            sub: string;
+        };
+    }): Promise<import("./entities/assessment-score.entity").AssessmentScore>;
     remove(id: string): Promise<void>;
 }

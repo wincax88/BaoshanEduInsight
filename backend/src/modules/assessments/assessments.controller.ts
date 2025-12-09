@@ -27,7 +27,7 @@ export class AssessmentsController {
 
   @Post()
   @ApiOperation({ summary: '创建测评任务' })
-  create(@Body() dto: CreateAssessmentDto, @Request() req) {
+  create(@Body() dto: CreateAssessmentDto, @Request() req: { user: { sub: string } }) {
     return this.assessmentsService.create(dto, req.user.sub);
   }
 

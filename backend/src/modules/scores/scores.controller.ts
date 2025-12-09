@@ -27,13 +27,13 @@ export class ScoresController {
 
   @Post()
   @ApiOperation({ summary: '创建评分记录' })
-  create(@Body() dto: CreateScoreDto, @Request() req) {
+  create(@Body() dto: CreateScoreDto, @Request() req: { user: { sub: string } }) {
     return this.scoresService.create(dto, req.user.sub);
   }
 
   @Post('batch')
   @ApiOperation({ summary: '批量创建评分记录' })
-  batchCreate(@Body() dto: BatchCreateScoreDto, @Request() req) {
+  batchCreate(@Body() dto: BatchCreateScoreDto, @Request() req: { user: { sub: string } }) {
     return this.scoresService.batchCreate(dto, req.user.sub);
   }
 
@@ -60,7 +60,7 @@ export class ScoresController {
 
   @Patch(':id')
   @ApiOperation({ summary: '更新评分' })
-  update(@Param('id') id: string, @Body() dto: UpdateScoreDto, @Request() req) {
+  update(@Param('id') id: string, @Body() dto: UpdateScoreDto, @Request() req: { user: { sub: string } }) {
     return this.scoresService.update(id, dto, req.user.sub);
   }
 

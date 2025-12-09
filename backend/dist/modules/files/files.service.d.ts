@@ -1,6 +1,6 @@
 import { OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-interface MinioFileInfo {
+export interface MinioFileInfo {
     name: string;
     lastModified: Date;
     etag: string;
@@ -34,4 +34,3 @@ export declare class FilesService implements OnModuleInit {
     getFileStream(fileName: string): Promise<import("stream").Readable>;
     listFiles(prefix?: string): Promise<MinioFileInfo[]>;
 }
-export {};
