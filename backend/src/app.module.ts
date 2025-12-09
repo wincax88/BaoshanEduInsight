@@ -25,6 +25,8 @@ import { SchoolsModule } from './modules/schools/schools.module';
 import { IndicatorsModule } from './modules/indicators/indicators.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { ScoresModule } from './modules/scores/scores.module';
+import { StatisticsModule } from './modules/statistics/statistics.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { ScoresModule } from './modules/scores/scores.module';
     IndicatorsModule,
     AssessmentsModule,
     ScoresModule,
+    StatisticsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

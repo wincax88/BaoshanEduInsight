@@ -67,9 +67,21 @@ export default [
         component: './Assessments/SelfEvaluation',
       },
       {
+        path: '/assessments/self-evaluation/:taskId',
+        name: '自评填报详情',
+        component: './Assessments/SelfEvaluation',
+        hideInMenu: true,
+      },
+      {
         path: '/assessments/supervision',
         name: '督导评估',
         component: './Assessments/Supervision',
+      },
+      {
+        path: '/assessments/supervision/:taskId',
+        name: '督导评估详情',
+        component: './Assessments/Supervision',
+        hideInMenu: true,
       },
     ],
   },

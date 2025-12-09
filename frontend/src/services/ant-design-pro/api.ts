@@ -2,27 +2,39 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** 获取当前的用户 GET /api/currentUser */
+/** 获取当前的用户 GET /api/auth/profile */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<{
-    data: API.CurrentUser;
-  }>('/api/currentUser', {
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    throw new Error('No access token');
+  }
+  const user = await request<API.CurrentUser>('/api/auth/profile', {
     method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     ...(options || {}),
   });
+  // Transform to expected format with name field for display
+  return {
+    data: {
+      ...user,
+      name: user.realName || user.username,
+      userid: user.id,
+    },
+  };
 }
 
-/** 退出登录接口 POST /api/login/outLogin */
+/** 退出登录接口 */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
-    method: 'POST',
-    ...(options || {}),
-  });
+  // Clear the JWT token
+  localStorage.removeItem('access_token');
+  return { success: true };
 }
 
-/** 登录接口 POST /api/login/account */
+/** 登录接口 POST /api/auth/login */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/login/account', {
+  return request<API.LoginResult>('/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

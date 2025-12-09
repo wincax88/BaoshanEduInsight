@@ -3,7 +3,10 @@
 
 declare namespace API {
   type CurrentUser = {
+    id?: string;
     name?: string;
+    username?: string;
+    realName?: string;
     avatar?: string;
     userid?: string;
     email?: string;
@@ -15,6 +18,8 @@ declare namespace API {
     unreadCount?: number;
     country?: string;
     access?: string;
+    roles?: { id: string; name: string; code: string }[];
+    school?: { id: string; name: string };
     geographic?: {
       province?: { label?: string; key?: string };
       city?: { label?: string; key?: string };
@@ -24,6 +29,17 @@ declare namespace API {
   };
 
   type LoginResult = {
+    access_token?: string;
+    user?: {
+      id: string;
+      username: string;
+      realName: string;
+      email?: string;
+      avatar?: string;
+      roles: { id: string; name: string; code: string }[];
+      school?: { id: string; name: string };
+    };
+    // Legacy fields for compatibility
     status?: string;
     type?: string;
     currentAuthority?: string;

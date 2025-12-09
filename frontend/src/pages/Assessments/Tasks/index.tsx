@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EyeOutlined, EditOutlined, AuditOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import {
   PageContainer,
@@ -9,9 +9,9 @@ import {
   ProFormDateRangePicker,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { Button, message, Tag, Space } from 'antd';
+import { Button, message, Tag, Space, Tooltip } from 'antd';
 import { useRef, useState } from 'react';
-import { request } from '@umijs/max';
+import { request, history } from '@umijs/max';
 
 type TaskItem = {
   id: string;
@@ -69,13 +69,43 @@ const AssessmentTasks: React.FC = () => {
     {
       title: '操作',
       valueType: 'option',
-      width: 200,
+      width: 220,
       render: (_, record) => (
         <Space>
-          <a>查看</a>
-          {record.status === 'draft' && <a>开始自评</a>}
-          {record.status === 'self_evaluation' && <a>填报自评</a>}
-          {record.status === 'supervision' && <a>督导评估</a>}
+          <Tooltip title="查看详情">
+            <Button
+              type="link"
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() => history.push(`/assessments/self-evaluation/${record.id}`)}
+            >
+              查看
+            </Button>
+          </Tooltip>
+          {(record.status === 'draft' || record.status === 'self_evaluation') && (
+            <Tooltip title={record.status === 'draft' ? '开始自评' : '继续自评'}>
+              <Button
+                type="link"
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => history.push(`/assessments/self-evaluation/${record.id}`)}
+              >
+                {record.status === 'draft' ? '开始自评' : '填报自评'}
+              </Button>
+            </Tooltip>
+          )}
+          {record.status === 'supervision' && (
+            <Tooltip title="督导评估">
+              <Button
+                type="link"
+                size="small"
+                icon={<AuditOutlined />}
+                onClick={() => history.push(`/assessments/supervision/${record.id}`)}
+              >
+                督导评估
+              </Button>
+            </Tooltip>
+          )}
         </Space>
       ),
     },

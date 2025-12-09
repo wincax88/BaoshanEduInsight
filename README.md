@@ -44,7 +44,7 @@ BaoshanEduInsight/
 
 ```bash
 # 启动 PostgreSQL 和 MinIO
-docker-compose up -d postgres minio redis
+docker compose up -d postgres minio redis
 ```
 
 ### 2. 启动后端
@@ -131,11 +131,67 @@ npm run dev
 
 ```bash
 # 构建并启动所有服务
-docker-compose up -d
+docker compose up -d
 
 # 查看日志
-docker-compose logs -f
+docker compose logs -f
 ```
+
+### 故障排除
+
+#### docker-compose 命令报错 "ModuleNotFoundError: No module named 'distutils'"
+
+如果遇到此错误，说明你的系统使用的是旧版 `docker-compose`（Python 实现），而 Python 3.12 移除了 `distutils` 模块。
+
+**解决方案 1（推荐）：安装 Docker Compose V2**
+
+```bash
+# 添加 Docker 官方 APT 仓库
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 更新并安装 docker-compose-plugin
+sudo apt-get update
+sudo apt-get install -y docker-compose-plugin
+
+# 使用新命令（注意是 'docker compose' 而不是 'docker-compose'）
+docker compose up -d postgres minio redis
+```
+
+**解决方案 2（快速修复）：安装 setuptools**
+
+```bash
+# 安装 setuptools（提供 distutils 支持）
+sudo apt-get install -y python3-setuptools
+
+# 然后可以继续使用旧的 docker-compose 命令
+docker-compose up -d postgres minio redis
+```
+
+#### docker-compose 命令报错 "PermissionError: [Errno 13] Permission denied"
+
+如果遇到此错误，说明当前用户没有权限访问 Docker socket。
+
+**解决方案：将用户添加到 docker 组**
+
+```bash
+# 将当前用户添加到 docker 组
+sudo usermod -aG docker $USER
+
+# 重新加载组权限（或重新登录）
+newgrp docker
+
+# 验证权限
+docker ps
+
+# 现在可以正常使用 docker-compose 了
+docker-compose up -d postgres minio redis
+```
+
+**注意**：如果 `newgrp docker` 不起作用，请注销并重新登录，或者使用 `sudo` 运行 docker-compose 命令。
 
 ## 开发说明
 

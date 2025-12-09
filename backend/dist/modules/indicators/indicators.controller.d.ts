@@ -1,0 +1,30 @@
+import { IndicatorsService } from './indicators.service';
+import { CreateIndicatorL1Dto } from './dto/create-indicator-l1.dto';
+import { CreateIndicatorL2Dto } from './dto/create-indicator-l2.dto';
+import { CreateIndicatorL3Dto } from './dto/create-indicator-l3.dto';
+import { CreateEvaluationItemDto } from './dto/create-evaluation-item.dto';
+export declare class IndicatorsController {
+    private readonly indicatorsService;
+    constructor(indicatorsService: IndicatorsService);
+    getTree(): Promise<import("./entities/indicator-l1.entity").IndicatorL1[]>;
+    createL1(dto: CreateIndicatorL1Dto): Promise<import("./entities/indicator-l1.entity").IndicatorL1>;
+    findAllL1(): Promise<import("./entities/indicator-l1.entity").IndicatorL1[]>;
+    findOneL1(id: string): Promise<import("./entities/indicator-l1.entity").IndicatorL1>;
+    updateL1(id: string, dto: Partial<CreateIndicatorL1Dto>): Promise<import("./entities/indicator-l1.entity").IndicatorL1>;
+    removeL1(id: string): Promise<void>;
+    createL2(dto: CreateIndicatorL2Dto): Promise<import("./entities/indicator-l2.entity").IndicatorL2>;
+    findAllL2(parentId?: string): Promise<import("./entities/indicator-l2.entity").IndicatorL2[]>;
+    findOneL2(id: string): Promise<import("./entities/indicator-l2.entity").IndicatorL2>;
+    updateL2(id: string, dto: Partial<CreateIndicatorL2Dto>): Promise<import("./entities/indicator-l2.entity").IndicatorL2>;
+    removeL2(id: string): Promise<void>;
+    createL3(dto: CreateIndicatorL3Dto): Promise<import("./entities/indicator-l3.entity").IndicatorL3>;
+    findAllL3(parentId?: string): Promise<import("./entities/indicator-l3.entity").IndicatorL3[]>;
+    findOneL3(id: string): Promise<import("./entities/indicator-l3.entity").IndicatorL3>;
+    updateL3(id: string, dto: Partial<CreateIndicatorL3Dto>): Promise<import("./entities/indicator-l3.entity").IndicatorL3>;
+    removeL3(id: string): Promise<void>;
+    createItem(dto: CreateEvaluationItemDto): Promise<import("./entities/evaluation-item.entity").EvaluationItem>;
+    findAllItems(indicatorId?: string): Promise<import("./entities/evaluation-item.entity").EvaluationItem[]>;
+    findOneItem(id: string): Promise<import("./entities/evaluation-item.entity").EvaluationItem>;
+    updateItem(id: string, dto: Partial<CreateEvaluationItemDto>): Promise<import("./entities/evaluation-item.entity").EvaluationItem>;
+    removeItem(id: string): Promise<void>;
+}

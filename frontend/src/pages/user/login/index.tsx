@@ -106,7 +106,9 @@ const Login: React.FC = () => {
     try {
       // 登录
       const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      if (msg.access_token) {
+        // 保存 JWT token 到 localStorage
+        localStorage.setItem('access_token', msg.access_token);
         message.success('登录成功！');
         await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
@@ -115,7 +117,7 @@ const Login: React.FC = () => {
       }
       console.log(msg);
       // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      setUserLoginState({ status: 'error', type });
     } catch (error) {
       console.log(error);
       message.error('登录失败，请重试！');

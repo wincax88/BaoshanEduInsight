@@ -1,0 +1,37 @@
+import { Repository } from 'typeorm';
+import { IndicatorL1 } from './entities/indicator-l1.entity';
+import { IndicatorL2 } from './entities/indicator-l2.entity';
+import { IndicatorL3 } from './entities/indicator-l3.entity';
+import { EvaluationItem } from './entities/evaluation-item.entity';
+import { CreateIndicatorL1Dto } from './dto/create-indicator-l1.dto';
+import { CreateIndicatorL2Dto } from './dto/create-indicator-l2.dto';
+import { CreateIndicatorL3Dto } from './dto/create-indicator-l3.dto';
+import { CreateEvaluationItemDto } from './dto/create-evaluation-item.dto';
+export declare class IndicatorsService {
+    private l1Repository;
+    private l2Repository;
+    private l3Repository;
+    private itemRepository;
+    constructor(l1Repository: Repository<IndicatorL1>, l2Repository: Repository<IndicatorL2>, l3Repository: Repository<IndicatorL3>, itemRepository: Repository<EvaluationItem>);
+    getIndicatorTree(): Promise<IndicatorL1[]>;
+    createL1(dto: CreateIndicatorL1Dto): Promise<IndicatorL1>;
+    findAllL1(): Promise<IndicatorL1[]>;
+    findOneL1(id: string): Promise<IndicatorL1>;
+    updateL1(id: string, dto: Partial<CreateIndicatorL1Dto>): Promise<IndicatorL1>;
+    removeL1(id: string): Promise<void>;
+    createL2(dto: CreateIndicatorL2Dto): Promise<IndicatorL2>;
+    findAllL2(parentId?: string): Promise<IndicatorL2[]>;
+    findOneL2(id: string): Promise<IndicatorL2>;
+    updateL2(id: string, dto: Partial<CreateIndicatorL2Dto>): Promise<IndicatorL2>;
+    removeL2(id: string): Promise<void>;
+    createL3(dto: CreateIndicatorL3Dto): Promise<IndicatorL3>;
+    findAllL3(parentId?: string): Promise<IndicatorL3[]>;
+    findOneL3(id: string): Promise<IndicatorL3>;
+    updateL3(id: string, dto: Partial<CreateIndicatorL3Dto>): Promise<IndicatorL3>;
+    removeL3(id: string): Promise<void>;
+    createItem(dto: CreateEvaluationItemDto): Promise<EvaluationItem>;
+    findAllItems(indicatorId?: string): Promise<EvaluationItem[]>;
+    findOneItem(id: string): Promise<EvaluationItem>;
+    updateItem(id: string, dto: Partial<CreateEvaluationItemDto>): Promise<EvaluationItem>;
+    removeItem(id: string): Promise<void>;
+}
