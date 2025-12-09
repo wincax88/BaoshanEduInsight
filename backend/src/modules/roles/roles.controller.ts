@@ -13,40 +13,43 @@ import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('角色管理')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('admin')
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  @ApiOperation({ summary: '创建角色' })
+  @ApiOperation({ summary: '创建角色（仅管理员）' })
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.rolesService.create(createRoleDto);
   }
 
   @Get()
-  @ApiOperation({ summary: '获取角色列表' })
+  @ApiOperation({ summary: '获取角色列表（仅管理员）' })
   findAll() {
     return this.rolesService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: '获取角色详情' })
+  @ApiOperation({ summary: '获取角色详情（仅管理员）' })
   findOne(@Param('id') id: string) {
     return this.rolesService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: '更新角色' })
+  @ApiOperation({ summary: '更新角色（仅管理员）' })
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.rolesService.update(id, updateRoleDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: '删除角色' })
+  @ApiOperation({ summary: '删除角色（仅管理员）' })
   remove(@Param('id') id: string) {
     return this.rolesService.remove(id);
   }

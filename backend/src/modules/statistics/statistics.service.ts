@@ -82,110 +82,98 @@ export class StatisticsService {
   }
 
   // 获取一级指标得分分布（用于雷达图）
+  // 优化：使用 JOIN 查询替代循环中的 N+1 查询
   async getIndicatorScoreDistribution(taskId?: string) {
     // 获取所有一级指标
     const indicators = await this.indicatorL1Repository.find({
       order: { sortOrder: 'ASC' },
     });
 
+    // 一次性获取所有评价要素及其对应的一级指标ID
+    const itemsWithL1 = await this.evaluationItemRepository
+      .createQueryBuilder('item')
+      .leftJoin('item.indicator', 'l3')
+      .leftJoin('l3.parent', 'l2')
+      .leftJoin('l2.parent', 'l1')
+      .select(['item.id', 'l1.id'])
+      .getRawMany();
+
+    // 构建评价要素到一级指标的映射
+    const itemToL1Map = new Map<string, string>();
+    itemsWithL1.forEach((row) => {
+      if (row.item_id && row.l1_id) {
+        itemToL1Map.set(row.item_id, row.l1_id);
+      }
+    });
+
     if (!taskId) {
       // 返回所有已完成任务的平均得分
-      const result = [];
+      // 一次性查询所有督导评分（已完成任务）
+      const allScores = await this.scoreRepository
+        .createQueryBuilder('score')
+        .leftJoin('score.task', 'task')
+        .where('score.scoreType = :scoreType', { scoreType: ScoreType.SUPERVISION })
+        .andWhere('task.status = :status', { status: AssessmentStatus.COMPLETED })
+        .select(['score.evaluationItemId', 'score.score'])
+        .getRawMany();
 
-      for (const indicator of indicators) {
-        // 获取该一级指标下所有评价要素的ID
-        const itemIds = await this.evaluationItemRepository
-          .createQueryBuilder('item')
-          .leftJoin('item.indicator', 'l3')
-          .leftJoin('l3.parent', 'l2')
-          .leftJoin('l2.parent', 'l1')
-          .where('l1.id = :indicatorId', { indicatorId: indicator.id })
-          .select('item.id')
-          .getMany();
-
-        if (itemIds.length === 0) {
-          result.push({
-            name: indicator.name,
-            code: indicator.code,
-            maxScore: indicator.weight,
-            avgScore: 0,
-          });
-          continue;
+      // 按一级指标聚合得分
+      const l1ScoreMap = new Map<string, number[]>();
+      allScores.forEach((score) => {
+        const l1Id = itemToL1Map.get(score.score_evaluationItemId);
+        if (l1Id) {
+          if (!l1ScoreMap.has(l1Id)) {
+            l1ScoreMap.set(l1Id, []);
+          }
+          l1ScoreMap.get(l1Id)!.push(Number(score.score_score));
         }
+      });
 
-        // 计算该指标的平均得分
-        const avgResult = await this.scoreRepository
-          .createQueryBuilder('score')
-          .leftJoin('score.task', 'task')
-          .where('score.evaluationItemId IN (:...itemIds)', { itemIds: itemIds.map(i => i.id) })
-          .andWhere('score.scoreType = :scoreType', { scoreType: ScoreType.SUPERVISION })
-          .andWhere('task.status = :status', { status: AssessmentStatus.COMPLETED })
-          .select('AVG(score.score)', 'avg')
-          .getRawOne();
-
-        result.push({
+      return indicators.map((indicator) => {
+        const scores = l1ScoreMap.get(indicator.id) || [];
+        const avgScore = scores.length > 0
+          ? scores.reduce((sum, s) => sum + s, 0) / scores.length
+          : 0;
+        return {
           name: indicator.name,
           code: indicator.code,
           maxScore: indicator.weight,
-          avgScore: Number(Number(avgResult?.avg || 0).toFixed(2)),
-        });
-      }
-
-      return result;
-    }
-
-    // 获取特定任务的指标得分
-    const result = [];
-
-    for (const indicator of indicators) {
-      const itemIds = await this.evaluationItemRepository
-        .createQueryBuilder('item')
-        .leftJoin('item.indicator', 'l3')
-        .leftJoin('l3.parent', 'l2')
-        .leftJoin('l2.parent', 'l1')
-        .where('l1.id = :indicatorId', { indicatorId: indicator.id })
-        .select('item.id')
-        .getMany();
-
-      if (itemIds.length === 0) {
-        result.push({
-          name: indicator.name,
-          code: indicator.code,
-          maxScore: indicator.weight,
-          selfScore: 0,
-          supervisionScore: 0,
-        });
-        continue;
-      }
-
-      // 自评得分
-      const selfResult = await this.scoreRepository
-        .createQueryBuilder('score')
-        .where('score.taskId = :taskId', { taskId })
-        .andWhere('score.evaluationItemId IN (:...itemIds)', { itemIds: itemIds.map(i => i.id) })
-        .andWhere('score.scoreType = :scoreType', { scoreType: ScoreType.SELF })
-        .select('SUM(score.score)', 'sum')
-        .getRawOne();
-
-      // 督导得分
-      const supervisionResult = await this.scoreRepository
-        .createQueryBuilder('score')
-        .where('score.taskId = :taskId', { taskId })
-        .andWhere('score.evaluationItemId IN (:...itemIds)', { itemIds: itemIds.map(i => i.id) })
-        .andWhere('score.scoreType = :scoreType', { scoreType: ScoreType.SUPERVISION })
-        .select('SUM(score.score)', 'sum')
-        .getRawOne();
-
-      result.push({
-        name: indicator.name,
-        code: indicator.code,
-        maxScore: indicator.weight,
-        selfScore: Number(Number(selfResult?.sum || 0).toFixed(2)),
-        supervisionScore: Number(Number(supervisionResult?.sum || 0).toFixed(2)),
+          avgScore: Number(avgScore.toFixed(2)),
+        };
       });
     }
 
-    return result;
+    // 获取特定任务的指标得分
+    // 一次性查询该任务的所有评分
+    const taskScores = await this.scoreRepository
+      .createQueryBuilder('score')
+      .where('score.taskId = :taskId', { taskId })
+      .select(['score.evaluationItemId', 'score.scoreType', 'score.score'])
+      .getRawMany();
+
+    // 按一级指标和评分类型聚合
+    const l1SelfScoreMap = new Map<string, number>();
+    const l1SupervisionScoreMap = new Map<string, number>();
+
+    taskScores.forEach((score) => {
+      const l1Id = itemToL1Map.get(score.score_evaluationItemId);
+      if (l1Id) {
+        const scoreValue = Number(score.score_score);
+        if (score.score_scoreType === ScoreType.SELF) {
+          l1SelfScoreMap.set(l1Id, (l1SelfScoreMap.get(l1Id) || 0) + scoreValue);
+        } else if (score.score_scoreType === ScoreType.SUPERVISION) {
+          l1SupervisionScoreMap.set(l1Id, (l1SupervisionScoreMap.get(l1Id) || 0) + scoreValue);
+        }
+      }
+    });
+
+    return indicators.map((indicator) => ({
+      name: indicator.name,
+      code: indicator.code,
+      maxScore: indicator.weight,
+      selfScore: Number((l1SelfScoreMap.get(indicator.id) || 0).toFixed(2)),
+      supervisionScore: Number((l1SupervisionScoreMap.get(indicator.id) || 0).toFixed(2)),
+    }));
   }
 
   // 获取待办事项

@@ -1,17 +1,18 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from '@umijs/max';
+import { tokenService } from '@/utils/tokenService';
 
 /** 获取当前的用户 GET /api/auth/profile */
 export async function currentUser(options?: { [key: string]: any }) {
-  const token = localStorage.getItem('access_token');
-  if (!token) {
+  if (!tokenService.exists()) {
     throw new Error('No access token');
   }
+  const authHeader = tokenService.getAuthHeader();
   const user = await request<API.CurrentUser>('/api/auth/profile', {
     method: 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: authHeader!,
     },
     ...(options || {}),
   });
@@ -28,7 +29,7 @@ export async function currentUser(options?: { [key: string]: any }) {
 /** 退出登录接口 */
 export async function outLogin(options?: { [key: string]: any }) {
   // Clear the JWT token
-  localStorage.removeItem('access_token');
+  tokenService.remove();
   return { success: true };
 }
 

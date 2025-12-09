@@ -15,22 +15,26 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('用户管理')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @ApiOperation({ summary: '创建用户' })
+  @Roles('admin')
+  @ApiOperation({ summary: '创建用户（仅管理员）' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
-  @ApiOperation({ summary: '获取用户列表' })
+  @Roles('admin')
+  @ApiOperation({ summary: '获取用户列表（仅管理员）' })
   findAll(@Query() query: QueryUserDto) {
     return this.usersService.findAll(query);
   }
@@ -42,19 +46,22 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: '更新用户' })
+  @Roles('admin')
+  @ApiOperation({ summary: '更新用户（仅管理员）' })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: '删除用户' })
+  @Roles('admin')
+  @ApiOperation({ summary: '删除用户（仅管理员）' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 
   @Post(':id/roles')
-  @ApiOperation({ summary: '分配角色' })
+  @Roles('admin')
+  @ApiOperation({ summary: '分配角色（仅管理员）' })
   assignRoles(@Param('id') id: string, @Body('roleIds') roleIds: string[]) {
     return this.usersService.assignRoles(id, roleIds);
   }

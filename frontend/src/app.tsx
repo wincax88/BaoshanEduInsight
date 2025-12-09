@@ -7,6 +7,7 @@ import React from 'react';
 import {
   AvatarDropdown,
   AvatarName,
+  ErrorBoundary,
   Footer,
   Question,
 } from '@/components';
@@ -118,7 +119,7 @@ export const layout: RunTimeLayoutConfig = ({
     childrenRender: (children) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
-        <>
+        <ErrorBoundary>
           {children}
           {isDevOrTest && (
             <SettingDrawer
@@ -133,7 +134,7 @@ export const layout: RunTimeLayoutConfig = ({
               }}
             />
           )}
-        </>
+        </ErrorBoundary>
       );
     },
     ...initialState?.settings,

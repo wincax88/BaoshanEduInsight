@@ -8,5 +8,6 @@
 import Footer from './Footer';
 import { Question } from './RightContent';
 import { AvatarDropdown, AvatarName } from './RightContent/AvatarDropdown';
+import ErrorBoundary from './ErrorBoundary';
 
-export { AvatarDropdown, AvatarName, Footer, Question };
+export { AvatarDropdown, AvatarName, ErrorBoundary, Footer, Question };

@@ -4,6 +4,13 @@ import * as Minio from 'minio';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 
+interface MinioFileInfo {
+  name: string;
+  lastModified: Date;
+  etag: string;
+  size: number;
+}
+
 @Injectable()
 export class FilesService implements OnModuleInit {
   private readonly logger = new Logger(FilesService.name);
@@ -133,13 +140,18 @@ export class FilesService implements OnModuleInit {
     }
   }
 
-  async listFiles(prefix: string = ''): Promise<any[]> {
+  async listFiles(prefix: string = ''): Promise<MinioFileInfo[]> {
     return new Promise((resolve, reject) => {
-      const files: any[] = [];
+      const files: MinioFileInfo[] = [];
       const stream = this.minioClient.listObjects(this.bucketName, prefix, true);
 
-      stream.on('data', (obj) => {
-        files.push(obj);
+      stream.on('data', (obj: Minio.BucketItem) => {
+        files.push({
+          name: obj.name || '',
+          lastModified: obj.lastModified || new Date(),
+          etag: obj.etag || '',
+          size: obj.size || 0,
+        });
       });
 
       stream.on('end', () => {

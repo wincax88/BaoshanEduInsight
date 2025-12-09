@@ -5,17 +5,75 @@ import { useEffect, useState } from 'react';
 import { request } from '@umijs/max';
 import type { DataNode } from 'antd/es/tree';
 
+// 评价要素接口
+interface EvaluationItem {
+  id: string;
+  name: string;
+  code: string;
+  maxScore: number;
+  description?: string;
+  baoshanFeature?: string;
+  scoringCriteria?: string;
+}
+
+// 三级指标接口
+interface L3Indicator {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  evaluationItems?: EvaluationItem[];
+}
+
+// 二级指标接口
+interface L2Indicator {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  children?: L3Indicator[];
+}
+
+// 一级指标接口
+interface L1Indicator {
+  id: string;
+  name: string;
+  code: string;
+  weight: number;
+  description?: string;
+  children?: L2Indicator[];
+}
+
+// 选中节点数据接口
+interface SelectedNodeData {
+  id: string;
+  name: string;
+  code: string;
+  level: number;
+  weight?: number;
+  maxScore?: number;
+  description?: string;
+  baoshanFeature?: string;
+  scoringCriteria?: string;
+}
+
+// 扩展 DataNode 以支持自定义数据
+interface IndicatorDataNode extends DataNode {
+  data?: SelectedNodeData;
+  children?: IndicatorDataNode[];
+}
+
 const Indicators: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [treeData, setTreeData] = useState<DataNode[]>([]);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [treeData, setTreeData] = useState<IndicatorDataNode[]>([]);
+  const [selectedNode, setSelectedNode] = useState<SelectedNodeData | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [form] = Form.useForm();
 
   const fetchIndicators = async () => {
     setLoading(true);
     try {
-      const res = await request('/api/indicators/tree');
+      const res = await request<L1Indicator[]>('/api/indicators/tree');
       const data = transformToTreeData(res);
       setTreeData(data);
     } catch (error) {
@@ -25,23 +83,23 @@ const Indicators: React.FC = () => {
     }
   };
 
-  const transformToTreeData = (data: any[]): DataNode[] => {
-    return data.map((l1: any) => ({
+  const transformToTreeData = (data: L1Indicator[]): IndicatorDataNode[] => {
+    return data.map((l1) => ({
       key: `l1-${l1.id}`,
       title: `${l1.name} (${l1.weight}分)`,
-      data: { ...l1, level: 1 },
-      children: l1.children?.map((l2: any) => ({
+      data: { ...l1, level: 1 } as SelectedNodeData,
+      children: l1.children?.map((l2) => ({
         key: `l2-${l2.id}`,
         title: l2.name,
-        data: { ...l2, level: 2 },
-        children: l2.children?.map((l3: any) => ({
+        data: { ...l2, level: 2 } as SelectedNodeData,
+        children: l2.children?.map((l3) => ({
           key: `l3-${l3.id}`,
           title: l3.name,
-          data: { ...l3, level: 3 },
-          children: l3.evaluationItems?.map((item: any) => ({
+          data: { ...l3, level: 3 } as SelectedNodeData,
+          children: l3.evaluationItems?.map((item) => ({
             key: `item-${item.id}`,
             title: `${item.name} (${item.maxScore}分)`,
-            data: { ...item, level: 4 },
+            data: { ...item, level: 4 } as SelectedNodeData,
             isLeaf: true,
           })),
         })),
@@ -53,8 +111,8 @@ const Indicators: React.FC = () => {
     fetchIndicators();
   }, []);
 
-  const onSelect = (selectedKeys: React.Key[], info: any) => {
-    setSelectedNode(info.node?.data);
+  const onSelect = (_selectedKeys: React.Key[], info: { node: IndicatorDataNode }) => {
+    setSelectedNode(info.node?.data ?? null);
   };
 
   const renderDetail = () => {

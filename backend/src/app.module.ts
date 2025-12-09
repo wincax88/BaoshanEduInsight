@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configs from './config';
@@ -35,6 +36,13 @@ import { FilesModule } from './modules/files/files.module';
       load: configs,
       envFilePath: ['.env.local', '.env'],
     }),
+    // 速率限制配置：默认每分钟最多 60 次请求
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 时间窗口：60秒
+        limit: 60,  // 最大请求次数
+      },
+    ]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

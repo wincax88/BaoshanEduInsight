@@ -1,6 +1,7 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
 import { message, notification } from 'antd';
+import { tokenService } from '@/utils/tokenService';
 
 // 错误处理方案： 错误类型
 enum ErrorShowType {
@@ -10,13 +11,34 @@ enum ErrorShowType {
   NOTIFICATION = 3,
   REDIRECT = 9,
 }
+
 // 与后端约定的响应数据格式
-interface ResponseStructure {
+interface ResponseStructure<T = unknown> {
   success: boolean;
-  data: any;
+  data: T;
   errorCode?: number;
   errorMessage?: string;
   showType?: ErrorShowType;
+}
+
+// 业务错误接口
+interface BizError extends Error {
+  name: 'BizError';
+  info: ResponseStructure;
+}
+
+// 请求错误接口（兼容 axios 错误）
+interface RequestError extends Error {
+  response?: {
+    status: number;
+    data?: unknown;
+  };
+  request?: XMLHttpRequest;
+}
+
+// 请求处理选项
+interface RequestHandlerOptions {
+  skipErrorHandler?: boolean;
 }
 
 /**
@@ -32,18 +54,19 @@ export const errorConfig: RequestConfig = {
       const { success, data, errorCode, errorMessage, showType } =
         res as unknown as ResponseStructure;
       if (!success) {
-        const error: any = new Error(errorMessage);
+        const error = new Error(errorMessage) as BizError;
         error.name = 'BizError';
-        error.info = { errorCode, errorMessage, showType, data };
+        error.info = { success, errorCode, errorMessage, showType, data };
         throw error; // 抛出自制的错误
       }
     },
     // 错误接收及处理
-    errorHandler: (error: any, opts: any) => {
+    errorHandler: (error: BizError | RequestError, opts?: RequestHandlerOptions) => {
       if (opts?.skipErrorHandler) throw error;
       // 我们的 errorThrower 抛出的错误。
       if (error.name === 'BizError') {
-        const errorInfo: ResponseStructure | undefined = error.info;
+        const bizError = error as BizError;
+        const errorInfo = bizError.info;
         if (errorInfo) {
           const { errorMessage, errorCode } = errorInfo;
           switch (errorInfo.showType) {
@@ -58,7 +81,7 @@ export const errorConfig: RequestConfig = {
               break;
             case ErrorShowType.NOTIFICATION:
               notification.open({
-                title: errorCode,
+                message: String(errorCode),
                 description: errorMessage,
               });
               break;
@@ -69,18 +92,19 @@ export const errorConfig: RequestConfig = {
               message.error(errorMessage);
           }
         }
-      } else if (error.response) {
-        // Axios 的错误
-        // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
-        message.error(`Response status:${error.response.status}`);
-      } else if (error.request) {
-        // 请求已经成功发起，但没有收到响应
-        // \`error.request\` 在浏览器中是 XMLHttpRequest 的实例，
-        // 而在node.js中是 http.ClientRequest 的实例
-        message.error('None response! Please retry.');
       } else {
-        // 发送请求时出了点问题
-        message.error('Request error, please retry.');
+        const reqError = error as RequestError;
+        if (reqError.response) {
+          // Axios 的错误
+          // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
+          message.error(`Response status:${reqError.response.status}`);
+        } else if (reqError.request) {
+          // 请求已经成功发起，但没有收到响应
+          message.error('None response! Please retry.');
+        } else {
+          // 发送请求时出了点问题
+          message.error('Request error, please retry.');
+        }
       }
     },
   },
@@ -88,9 +112,15 @@ export const errorConfig: RequestConfig = {
   // 请求拦截器
   requestInterceptors: [
     (config: RequestOptions) => {
-      // 拦截请求配置，进行个性化处理。
-      const url = config?.url?.concat('?token=123');
-      return { ...config, url };
+      // 拦截请求配置，添加 Authorization header
+      const authHeader = tokenService.getAuthHeader();
+      if (authHeader) {
+        config.headers = {
+          ...config.headers,
+          Authorization: authHeader,
+        };
+      }
+      return config;
     },
   ],
 
