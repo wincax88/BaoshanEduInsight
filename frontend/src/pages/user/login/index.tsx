@@ -18,8 +18,8 @@ import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Footer } from '@/components';
-import { login } from '@/services/ant-design-pro/api';
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import { login } from '@/services/api/api';
+import { getFakeCaptcha } from '@/services/api/login';
 import { tokenService } from '@/utils/tokenService';
 import Settings from '../../../../config/defaultSettings';
 
@@ -141,8 +141,8 @@ const Login: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle="Ant Design 是西湖区最具影响力的 Web 设计规范"
+          title="宝山区小学成熟度测评"
+          subTitle="宝山区小学成熟度测评系统"
           initialValues={{
             autoLogin: true,
           }}

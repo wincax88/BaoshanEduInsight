@@ -83,7 +83,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Ant Design Pro',
+  title: '宝山区小学成熟度测评',
   layout: {
     locale: false,
     ...defaultSettings,

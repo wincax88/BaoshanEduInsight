@@ -1,6 +1,6 @@
 ---
 name: '功能需求 | Feature Requirements ✨'
-about: 对 Ant Design Pro  的需求或建议
+about: 对宝山区小学成熟度测评系统的需求或建议
 title: '👑 [需求 | Feature]'
 labels: '👑 Feature Request'
 assignees: ''

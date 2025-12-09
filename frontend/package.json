@@ -1,9 +1,9 @@
 {
-  "name": "ant-design-pro",
-  "version": "6.0.0",
+  "name": "baoshan-edu-insight",
+  "version": "1.0.0",
   "private": true,
-  "description": "An out-of-box UI solution for enterprise applications",
-  "repository": "git@github.com:ant-design/ant-design-pro.git",
+  "description": "宝山区小学成熟度测评系统",
+  "repository": "git@github.com:lfun/BaoshanEduInsight.git",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 max build",
     "build": "max build",
