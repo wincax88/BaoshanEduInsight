@@ -1,127 +1,118 @@
-Language: 🇺🇸 | [🇨🇳](./README.zh-CN.md) | [🇷🇺](./README.ru-RU.md) | [🇹🇷](./README.tr-TR.md) | [🇯🇵](./README.ja-JP.md) | [🇫🇷](./README.fr-FR.md) | [🇵🇹](./README.pt-BR.md) | [🇸🇦](./README.ar-DZ.md) | [🇪🇸](./README.es-ES.md)
-
 <h1 align="center">Ant Design Pro</h1>
 
 <div align="center">
 
-An out-of-box UI solution for enterprise applications as a React boilerplate.
+开箱即用的中台前端/设计解决方案。
 
 [![CI](https://github.com/ant-design/ant-design-pro/actions/workflows/ci.yml/badge.svg)](https://github.com/ant-design/ant-design-pro/actions/workflows/ci.yml)
 [![Preview Deploy](https://github.com/ant-design/ant-design-pro/actions/workflows/preview-deploy.yml/badge.svg)](https://github.com/ant-design/ant-design-pro/actions/workflows/preview-deploy.yml)
 [![Build With Umi](https://img.shields.io/badge/build%20with-umi-028fe4.svg?style=flat-square)](http://umijs.org/)
 [![Checked with Biome](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev)
-[![](https://badgen.net/badge/icon/Ant%20Design?icon=https://gw.alipayobjects.com/zos/antfincdn/Pp4WPgVDB3/KDpgvguMpGfqaHPjicRK.svg&label)](https://ant.design/)
+![](https://badgen.net/badge/icon/Ant%20Design?icon=https://gw.alipayobjects.com/zos/antfincdn/Pp4WPgVDB3/KDpgvguMpGfqaHPjicRK.svg&label)
 
-<img width="1718" height="1191" alt="light theme preview" src="https://github.com/user-attachments/assets/74ad0b4a-e086-4955-8edd-9f2cff31aee8" />
-<img width="1718" height="1191" alt="dark theme preview" src="https://github.com/user-attachments/assets/d4bcb7c1-42c7-4c0f-b130-1193a931f9f7" />
+![](https://github.com/user-attachments/assets/fde29061-3d9a-4397-8ac2-397b0e033ef5)
 
 </div>
 
-- Preview: http://preview.pro.ant.design
-- Home Page: http://pro.ant.design
-- Documentation: http://pro.ant.design/docs/getting-started
-- ChangeLog: http://pro.ant.design/docs/changelog
-- FAQ: http://pro.ant.design/docs/faq
+- 预览：http://preview.pro.ant.design
+- 首页：http://pro.ant.design/index-cn
+- 使用文档：http://pro.ant.design/docs/getting-started-cn
+- 更新日志: http://pro.ant.design/docs/changelog-cn
+- 常见问题：http://pro.ant.design/docs/faq-cn
 
-## Features
+## 5.0 已经发布! 🎉🎉🎉
 
-- :bulb: **TypeScript**: A language for application-scale JavaScript
-- :scroll: **Blocks**: Build page with block template
-- :gem: **Neat Design**: Follow [Ant Design specification](http://ant.design/)
-- :triangular_ruler: **Common Templates**: Typical templates for enterprise applications
-- :rocket: **State of The Art Development**: Newest development stack of React/umi/dva/antd
-- :iphone: **Responsive**: Designed for variable screen sizes
-- :art: **Theming**: Customizable theme with simple config
-- :globe_with_meridians: **International**: Built-in i18n solution
-- :gear: **Best Practices**: Solid workflow to make your code healthy
-- :1234: **Mock development**: Easy to use mock development solution
-- :white_check_mark: **UI Test**: Fly safely with unit and e2e tests
+[Ant Design Pro 5.0](https://github.com/ant-design/ant-design-pro/issues/8656)
 
-## Templates
+## 特性
+
+- :bulb: **TypeScript**: 应用程序级 JavaScript 的语言
+- :scroll: **区块**: 通过区块模板快速构建页面
+- :gem: **优雅美观**：基于 Ant Design 体系精心设计
+- :triangular_ruler: **常见设计模式**：提炼自中后台应用的典型页面和场景
+- :rocket: **最新技术栈**：使用 React/umi/dva/antd 等前端前沿技术开发
+- :iphone: **响应式**：针对不同屏幕大小设计
+- :art: **主题**：可配置的主题满足多样化的品牌诉求
+- :globe_with_meridians: **国际化**：内建业界通用的国际化方案
+- :gear: **最佳实践**：良好的工程实践助您持续产出高质量代码
+- :1234: **Mock 数据**：实用的本地数据调试方案
+- :white_check_mark: **UI 测试**：自动化测试保障前端产品质量
+
+## 模板
 
 ```
 - Dashboard
-  - Analytic
-  - Monitor
-  - Workspace
-- Form
-  - Basic Form
-  - Step Form
-  - Advanced From
-- List
-  - Standard Table
-  - Standard List
-  - Card List
-  - Search List (Project/Applications/Article)
-- Profile
-  - Simple Profile
-  - Advanced Profile
-- Account
-  - Account Center
-  - Account Settings
-- Result
-  - Success
-  - Failed
-- Exception
-  - 403
-  - 404
-  - 500
-- User
-  - Login
-  - Register
-  - Register Result
+  - 分析页
+  - 监控页
+  - 工作台
+- 表单页
+  - 基础表单页
+  - 分步表单页
+  - 高级表单页
+- 列表页
+  - 查询表格
+  - 标准列表
+  - 卡片列表
+  - 搜索列表（项目/应用/文章）
+- 详情页
+  - 基础详情页
+  - 高级详情页
+- 用户
+  - 用户中心页
+  - 用户设置页
+- 结果
+  - 成功页
+  - 失败页
+- 异常
+  - 403 无权限
+  - 404 找不到
+  - 500 服务器出错
+- 帐户
+  - 登录
+  - 注册
+  - 注册成功
 ```
 
-## Usage
+## 使用
 
-### Use bash
-
-We provide pro-cli to quickly initialize scaffolding.
+我们提供了 pro-cli 来快速的初始化脚手架。
 
 ```bash
-# use npm
+# 使用 npm
 npm i @ant-design/pro-cli -g
 pro create myapp
 ```
 
-Choose the pro template. Simple is the basic template, which only provides the basic content of the framework operation. Complete contains all blocks, which is not suitable for secondary development as a basic template.
+选择 pro 的模板，simple 是基础模板，只提供了框架运行的基本内容，complete 包含所有区块，不太适合当基础模板来进行二次开发。
 
 ```shell
-? 🚀 Full or a simple scaffold? (Use arrow keys)
+? 🚀 要全量的还是一个简单的脚手架? (Use arrow keys)
 ❯ simple
   complete
 ```
 
-Initialized Git repository:
-
-```shell
-$ git init myapp
-```
-
-Install dependencies:
+安装依赖：
 
 ```shell
 $ cd myapp && tyarn
-// or
+// 或
 $ cd myapp && npm install
 ```
 
-## Browsers support
+更多信息请参考 [使用文档](http://pro.ant.design/docs/getting-started)。
 
-Modern browsers.
+## 支持环境
+
+现代浏览器。
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
 | --- | --- | --- | --- | --- |
 | Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
-## Contributing
+## 参与贡献
 
-Any type of contribution is welcome, here are some examples of how you may contribute to this project:
+我们非常欢迎你的贡献，你可以通过以下方式和我们一起共建 :smiley:：
 
-- Use Ant Design Pro in your daily work.
-- Submit [issues](http://github.com/ant-design/ant-design-pro/issues) to report bugs or ask questions.
-- Propose [pull requests](http://github.com/ant-design/ant-design-pro/pulls) to improve our code.
-
-<a href="https://openomy.app/github/ant-design/ant-design-pro" target="_blank" style="display: block; width: 100%;" align="center">
-  <img src="https://openomy.app/svg?repo=ant-design/ant-design-pro&chart=bubble&latestMonth=3" target="_blank" alt="Contribution Leaderboard" style="display: block; width: 100%;" />
-</a>
+- 在你的公司或个人项目中使用 Ant Design Pro。
+- 通过 [Issue](http://github.com/ant-design/ant-design-pro/issues) 报告 bug 或进行咨询。
+- 提交 [Pull Request](http://github.com/ant-design/ant-design-pro/pulls) 改进 Pro 的代码。

@@ -9,7 +9,6 @@ import {
   AvatarName,
   Footer,
   Question,
-  SelectLang,
 } from '@/components';
 import { currentUser as queryCurrentUser } from '@/services/ant-design-pro/api';
 import defaultSettings from '../config/defaultSettings';
@@ -65,10 +64,7 @@ export const layout: RunTimeLayoutConfig = ({
   setInitialState,
 }) => {
   return {
-    actionsRender: () => [
-      <Question key="doc" />,
-      <SelectLang key="SelectLang" />,
-    ],
+    actionsRender: () => [<Question key="doc" />],
     avatarProps: {
       src: initialState?.currentUser?.avatar,
       title: <AvatarName />,
