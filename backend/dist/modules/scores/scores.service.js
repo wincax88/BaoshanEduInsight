@@ -11,16 +11,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var ScoresService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScoresService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const assessment_score_entity_1 = require("./entities/assessment-score.entity");
-let ScoresService = class ScoresService {
+let ScoresService = ScoresService_1 = class ScoresService {
     scoreRepository;
-    constructor(scoreRepository) {
+    dataSource;
+    logger = new common_1.Logger(ScoresService_1.name);
+    constructor(scoreRepository, dataSource) {
         this.scoreRepository = scoreRepository;
+        this.dataSource = dataSource;
     }
     async create(dto, userId) {
         const score = this.scoreRepository.create({
@@ -31,14 +35,52 @@ let ScoresService = class ScoresService {
         return this.scoreRepository.save(score);
     }
     async batchCreate(dto, userId) {
-        const scores = dto.scores.map((s) => this.scoreRepository.create({
-            ...s,
-            taskId: dto.taskId,
-            scoreType: dto.scoreType,
-            scoredBy: userId,
-            scoredAt: new Date(),
-        }));
-        return this.scoreRepository.save(scores);
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const savedScores = [];
+            for (const scoreDto of dto.scores) {
+                const existing = await queryRunner.manager.findOne(assessment_score_entity_1.AssessmentScore, {
+                    where: {
+                        taskId: dto.taskId,
+                        evaluationItemId: scoreDto.evaluationItemId,
+                        scoreType: dto.scoreType,
+                    },
+                });
+                if (existing) {
+                    existing.score = scoreDto.score;
+                    existing.evidence = scoreDto.evidence || existing.evidence;
+                    existing.comment = scoreDto.comment || existing.comment;
+                    existing.scoredBy = userId;
+                    existing.scoredAt = new Date();
+                    const updated = await queryRunner.manager.save(existing);
+                    savedScores.push(updated);
+                }
+                else {
+                    const score = queryRunner.manager.create(assessment_score_entity_1.AssessmentScore, {
+                        ...scoreDto,
+                        taskId: dto.taskId,
+                        scoreType: dto.scoreType,
+                        scoredBy: userId,
+                        scoredAt: new Date(),
+                    });
+                    const saved = await queryRunner.manager.save(score);
+                    savedScores.push(saved);
+                }
+            }
+            await queryRunner.commitTransaction();
+            this.logger.log(`Batch saved ${savedScores.length} scores for task ${dto.taskId}`);
+            return savedScores;
+        }
+        catch (error) {
+            await queryRunner.rollbackTransaction();
+            this.logger.error(`Failed to batch save scores for task ${dto.taskId}`, error);
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
+        }
     }
     async findByTask(taskId, scoreType) {
         const where = { taskId };
@@ -89,9 +131,10 @@ let ScoresService = class ScoresService {
     }
 };
 exports.ScoresService = ScoresService;
-exports.ScoresService = ScoresService = __decorate([
+exports.ScoresService = ScoresService = ScoresService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(assessment_score_entity_1.AssessmentScore)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.DataSource])
 ], ScoresService);
 //# sourceMappingURL=scores.service.js.map

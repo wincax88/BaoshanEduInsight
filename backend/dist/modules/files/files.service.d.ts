@@ -1,5 +1,11 @@
 import { OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+interface MinioFileInfo {
+    name: string;
+    lastModified: Date;
+    etag: string;
+    size: number;
+}
 export declare class FilesService implements OnModuleInit {
     private configService;
     private readonly logger;
@@ -26,5 +32,6 @@ export declare class FilesService implements OnModuleInit {
     deleteFile(fileName: string): Promise<void>;
     getFileUrl(fileName: string, expiry?: number): Promise<string>;
     getFileStream(fileName: string): Promise<import("stream").Readable>;
-    listFiles(prefix?: string): Promise<any[]>;
+    listFiles(prefix?: string): Promise<MinioFileInfo[]>;
 }
+export {};

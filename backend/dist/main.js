@@ -4,6 +4,7 @@ const core_1 = require("@nestjs/core");
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
+const common_2 = require("./common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.setGlobalPrefix('api');
@@ -11,6 +12,8 @@ async function bootstrap() {
         origin: ['http://localhost:8000', 'http://127.0.0.1:8000'],
         credentials: true,
     });
+    app.useGlobalFilters(new common_2.GlobalExceptionFilter());
+    app.useGlobalInterceptors(new common_2.TransformInterceptor());
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         transform: true,

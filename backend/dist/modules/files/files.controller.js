@@ -18,16 +18,65 @@ const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
 const files_service_1 = require("./files.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const ALLOWED_EXTENSIONS = [
+    '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp',
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+    '.txt', '.csv',
+    '.zip', '.rar', '.7z',
+];
+const ALLOWED_MIME_TYPES = [
+    'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp',
+    'application/pdf',
+    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/plain', 'text/csv',
+    'application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed',
+];
+const SAFE_FOLDER_PATTERN = /^[a-zA-Z0-9_-]+$/;
+function validateFileName(file) {
+    const originalName = file.originalname.toLowerCase();
+    const ext = '.' + originalName.split('.').pop();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        throw new common_1.BadRequestException(`不支持的文件类型: ${ext}`);
+    }
+    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+        throw new common_1.BadRequestException(`不支持的文件格式: ${file.mimetype}`);
+    }
+    if (originalName.includes('..') || originalName.includes('/') || originalName.includes('\\')) {
+        throw new common_1.BadRequestException('文件名包含非法字符');
+    }
+}
+function sanitizeFolder(folder) {
+    if (!folder)
+        return 'attachments';
+    if (!SAFE_FOLDER_PATTERN.test(folder)) {
+        throw new common_1.BadRequestException('文件夹名称只能包含字母、数字、下划线和连字符');
+    }
+    if (folder.includes('..') || folder.includes('/') || folder.includes('\\')) {
+        throw new common_1.BadRequestException('文件夹名称不能包含路径分隔符');
+    }
+    return folder;
+}
 let FilesController = class FilesController {
     filesService;
     constructor(filesService) {
         this.filesService = filesService;
     }
     async uploadFile(file, folder) {
-        return this.filesService.uploadFile(file, folder || 'attachments');
+        validateFileName(file);
+        const safeFolder = sanitizeFolder(folder);
+        return this.filesService.uploadFile(file, safeFolder);
     }
     async uploadMultipleFiles(files, folder) {
-        return this.filesService.uploadMultipleFiles(files, folder || 'attachments');
+        for (const file of files) {
+            validateFileName(file);
+            if (file.size > 10 * 1024 * 1024) {
+                throw new common_1.BadRequestException(`文件 ${file.originalname} 超过10MB限制`);
+            }
+        }
+        const safeFolder = sanitizeFolder(folder);
+        return this.filesService.uploadMultipleFiles(files, safeFolder);
     }
     async downloadFile(fileName, res) {
         try {
@@ -57,7 +106,7 @@ let FilesController = class FilesController {
 exports.FilesController = FilesController;
 __decorate([
     (0, common_1.Post)('upload'),
-    (0, swagger_1.ApiOperation)({ summary: '上传单个文件' }),
+    (0, swagger_1.ApiOperation)({ summary: '上传单个文件（支持图片、PDF、Office文档等）' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiBody)({
         schema: {
@@ -66,10 +115,11 @@ __decorate([
                 file: {
                     type: 'string',
                     format: 'binary',
+                    description: '支持: jpg, png, gif, pdf, doc, docx, xls, xlsx, ppt, pptx, txt, csv, zip, rar, 7z',
                 },
                 folder: {
                     type: 'string',
-                    description: '文件夹路径',
+                    description: '文件夹路径（只能包含字母、数字、下划线、连字符）',
                 },
             },
         },
@@ -87,7 +137,7 @@ __decorate([
 ], FilesController.prototype, "uploadFile", null);
 __decorate([
     (0, common_1.Post)('upload-multiple'),
-    (0, swagger_1.ApiOperation)({ summary: '上传多个文件' }),
+    (0, swagger_1.ApiOperation)({ summary: '上传多个文件（最多10个）' }),
     (0, swagger_1.ApiConsumes)('multipart/form-data'),
     (0, swagger_1.ApiBody)({
         schema: {
@@ -99,10 +149,11 @@ __decorate([
                         type: 'string',
                         format: 'binary',
                     },
+                    description: '支持: jpg, png, gif, pdf, doc, docx, xls, xlsx, ppt, pptx, txt, csv, zip, rar, 7z',
                 },
                 folder: {
                     type: 'string',
-                    description: '文件夹路径',
+                    description: '文件夹路径（只能包含字母、数字、下划线、连字符）',
                 },
             },
         },

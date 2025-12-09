@@ -149,7 +149,12 @@ let FilesService = FilesService_1 = class FilesService {
             const files = [];
             const stream = this.minioClient.listObjects(this.bucketName, prefix, true);
             stream.on('data', (obj) => {
-                files.push(obj);
+                files.push({
+                    name: obj.name || '',
+                    lastModified: obj.lastModified || new Date(),
+                    etag: obj.etag || '',
+                    size: obj.size || 0,
+                });
             });
             stream.on('end', () => {
                 resolve(files);
