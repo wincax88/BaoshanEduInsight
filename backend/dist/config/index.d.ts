@@ -1,18 +1,4 @@
 declare const _default: (((() => {
-    endPoint: string;
-    port: number;
-    useSSL: boolean;
-    accessKey: string;
-    secretKey: string;
-    bucket: string;
-}) & import("@nestjs/config").ConfigFactoryKeyHost<{
-    endPoint: string;
-    port: number;
-    useSSL: boolean;
-    accessKey: string;
-    secretKey: string;
-    bucket: string;
-}>) | ((() => {
     type: string;
     host: string;
     port: number;
@@ -36,5 +22,19 @@ declare const _default: (((() => {
 }) & import("@nestjs/config").ConfigFactoryKeyHost<{
     secret: string;
     expiresIn: string;
+}>) | ((() => {
+    endPoint: string;
+    port: number;
+    useSSL: boolean;
+    accessKey: string;
+    secretKey: string;
+    bucket: string;
+}) & import("@nestjs/config").ConfigFactoryKeyHost<{
+    endPoint: string;
+    port: number;
+    useSSL: boolean;
+    accessKey: string;
+    secretKey: string;
+    bucket: string;
 }>))[];
 export default _default;

@@ -73,8 +73,8 @@ const Indicators: React.FC = () => {
   const fetchIndicators = async () => {
     setLoading(true);
     try {
-      const res = await request<L1Indicator[]>('/api/indicators/tree');
-      const data = transformToTreeData(res);
+      const res = await request<{ code: number; message: string; data: L1Indicator[] }>('/api/indicators/tree');
+      const data = transformToTreeData(res.data || []);
       setTreeData(data);
     } catch (error) {
       console.error(error);
